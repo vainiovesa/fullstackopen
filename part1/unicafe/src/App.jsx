@@ -6,6 +6,15 @@ const Button = ({ onClick, text }) => <button onClick={onClick}>{text}</button>
 
 const Statistics = (props) => {
   const [good, neutral, bad] = props.stats
+
+  if (good === 0 && neutral === 0 && bad === 0) {
+    return (
+      <div>
+        No feedback given
+      </div>
+    )
+  }
+
   const total = good + neutral + bad
   const average = (good - bad) / total || 0
   const positive = good / total || 0
