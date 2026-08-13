@@ -9,6 +9,32 @@ const Filter = ({ filterValue, handleFilterChange }) => {
   )
 }
 
+const PersonForm = ({ addPerson, newName, handleNameChange, newNumber, handleNumberChange }) => {
+  return (
+    <div>
+      <form onSubmit={addPerson}>
+        <div>
+          name: <input value={newName} onChange={handleNameChange} />
+        </div>
+        <div>
+          number: <input value={newNumber} onChange={handleNumberChange} />
+        </div>
+        <div>
+          <button type="submit">add</button>
+        </div>
+      </form>
+    </div>
+  )
+}
+
+const Persons = ({ numbersToShow }) => {
+  return (
+    <div>
+      {numbersToShow()}
+    </div>
+  )
+}
+
 const App = () => {
   const [persons, setPersons] = useState([
     { name: 'Arto Hellas', number: '040-123456', id: 1 },
@@ -61,23 +87,23 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+
       <Filter filterValue={filterValue} handleFilterChange={handleFilterChange} />
 
-      <h2>Add a new</h2>
-      <form onSubmit={addPerson}>
-        <div>
-          name: <input value={newName} onChange={handleNameChange} />
-        </div>
-        <div>
-          number: <input value={newNumber} onChange={handleNumberChange} />
-        </div>
-        <div>
-          <button type="submit">add</button>
-        </div>
-      </form>
+      <h3>Add a new</h3>
 
-      <h2>Numbers</h2>
-      {numbersToShow()}
+      <PersonForm
+        addPerson={addPerson}
+        newName={newName}
+        handleNameChange={handleNameChange}
+        newNumber={newNumber}
+        handleNumberChange={handleNumberChange}
+      />
+
+      <h3>Numbers</h3>
+
+      <Persons numbersToShow={numbersToShow} />
+
     </div>
   )
 }
