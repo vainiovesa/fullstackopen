@@ -16,17 +16,23 @@ const App = () => {
   ]
 
   const [selected, setSelected] = useState(0)
-
+  
   const initialVotes = {}
   for (let i = 0; i < anecdotes.length; i++) {
     initialVotes[i] = 0
   }
-
+  
   const [votes, setVotes] = useState(initialVotes)
+  const [mostVotesIndex, setMostVotesIndex] = useState(0)
 
   const handleVote = () => {
     const newVotes = {...votes}
     newVotes[selected] += 1
+
+    if (newVotes[selected] > newVotes[mostVotesIndex]) {
+      setMostVotesIndex(selected)
+    }
+
     setVotes(newVotes)
   }
 
@@ -37,6 +43,7 @@ const App = () => {
 
   return (
     <div>
+      <h2>Anecdote of the day</h2>
       <div>
         {anecdotes[selected]}
       </div>
@@ -46,6 +53,13 @@ const App = () => {
       <div>
         <Button text={'vote'} onClick={handleVote} />
         <Button text={'next anecdote'} onClick={handleNext} />
+      </div>
+      <h2>Anecdote with most votes</h2>
+      <div>
+        {anecdotes[mostVotesIndex]}
+      </div>
+      <div>
+        has {votes[mostVotesIndex]} votes
       </div>
     </div>
   )
