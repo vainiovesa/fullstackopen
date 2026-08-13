@@ -4,7 +4,7 @@ import { useState } from 'react'
 
 const Button = ({ onClick, text }) => <button onClick={onClick}>{text}</button>
 
-const Statistic = (props) => {
+const Statistics = (props) => {
   const [good, neutral, bad] = props.stats
   const total = good + neutral + bad
   const average = (good - bad) / total || 0
@@ -64,7 +64,7 @@ const App = () => {
       <Button onClick={handleBadClick} text={'bad'} />
 
       <h2>Statistics</h2>
-      <Statistic stats={[good, neutral, bad]} />
+      <Statistics stats={[good, neutral, bad]} />
 
     </div>
   )
