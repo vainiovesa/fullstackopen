@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react'
-import axios from 'axios'
 import personService from './services/persons'
 
 
@@ -29,10 +28,22 @@ const PersonForm = ({ addPerson, newName, handleNameChange, newNumber, handleNum
   )
 }
 
-const Persons = ({ numbersToShow }) => {
+const Person = ({ name, number, remove}) => {
   return (
     <div>
-      {numbersToShow()}
+      {name} {number}
+      <button onClick={remove}>remove</button>
+    </div>
+  )
+}
+
+const Persons = ({ numbersToShow, remove }) => {
+  const toShow = numbersToShow.map(p => 
+    <Person key={p.id} name={p.name} number={p.number} remove={() => remove(p.id)}/>
+  )
+  return (
+    <div>
+      {toShow}
     </div>
   )
 }
@@ -57,8 +68,7 @@ const App = () => {
     event.preventDefault()
     const personObject = {
       name: newName,
-      number: newNumber,
-      id: persons.length + 1
+      number: newNumber
     }
 
     if (nameExists(newName)) {
@@ -67,7 +77,24 @@ const App = () => {
     }
 
     personService.create(personObject)
-      .then(setPersons(persons.concat(personObject)))
+      .then(response => {
+        setPersons(persons.concat(response))
+        setNewName('')
+        setNewNumber('')
+      })
+  }
+
+  const removePerson = (id) => {
+    const person = persons.find(p => p.id === id)
+
+    if (confirm(`Remove ${person.name}?`)) {
+      personService.remove(id)
+        .then(response => setPersons(persons.filter(p => p.id !== response.id)))
+        .catch(error => {
+          alert(`Person ${person.name} was already deleted from the server`)
+          setPersons(persons.filter(p => p.id !== id))
+        })
+    }
   }
 
   const handleNameChange = (event) => {
@@ -85,9 +112,9 @@ const App = () => {
   const numbersToShow = () => {
     let toShow = [...persons]
     if (filterValue !== '') {
-      toShow = toShow.filter(person => person.name.toLocaleLowerCase().includes(filterValue))
+      toShow = toShow.filter(person => person.name.toLowerCase().includes(filterValue))
     }
-    return toShow.map(person => <div key={person.id}>{person.name} {person.number}</div>)
+    return toShow
   }
 
   return (
@@ -108,7 +135,7 @@ const App = () => {
 
       <h3>Numbers</h3>
 
-      <Persons numbersToShow={numbersToShow} />
+      <Persons numbersToShow={numbersToShow()} remove={removePerson} />
 
     </div>
   )
