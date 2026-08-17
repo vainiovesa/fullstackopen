@@ -11,7 +11,7 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [filterValue, setFilterValue] = useState('')
-  const [notificationMessage, setNotificationMessage] = useState(null)
+  const [notification, setNotification] = useState({message: null})
 
   useEffect(() => {
     personService
@@ -34,16 +34,29 @@ const App = () => {
       if (confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)) {
         const personObject = persons.find(p => p.name === newName)
         const newPersonObject = {...personObject, number: newNumber}
+
         personService.update(newPersonObject)
           .then(response => {
             const newPersons = persons.map(person => {
               return person.id === response.id ? response : person
             })
             setPersons(newPersons)
-            setNotificationMessage(`Changed the number of ${response.name} to ${response.number}`)
+            setNotification({message: `Changed the number of ${response.name} to ${response.number}`})
             setTimeout(() => {
-              setNotificationMessage(null)
+              setNotification({message: null})
             }, 5000)
+          })
+          .catch(error => {
+            setNotification({
+              message: `Information of ${newName} has already been removed from server`,
+              type: 'error'
+            })
+            setTimeout(() => {
+              setNotification({message: null})
+            }, 5000)
+            setPersons(persons.filter(p => p.name !== newName))
+            setNewName('')
+            setNewNumber('')
           })
       }
       return
@@ -54,9 +67,9 @@ const App = () => {
         setPersons(persons.concat(response))
         setNewName('')
         setNewNumber('')
-        setNotificationMessage(`Added ${response.name}`)
+        setNotification({message: `Added ${response.name}`})
         setTimeout(() => {
-          setNotificationMessage(null)
+          setNotification({message: null})
         }, 5000)
       })
   }
@@ -98,7 +111,7 @@ const App = () => {
     <div>
       <h2>Phonebook</h2>
 
-      <Notification message={notificationMessage} />
+      <Notification message={notification.message} type={notification.type} />
 
       <Filter filterValue={filterValue} handleFilterChange={handleFilterChange} />
 
