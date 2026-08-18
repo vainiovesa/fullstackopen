@@ -12,9 +12,13 @@ const CountryFilter = ({ filterValue, handleFilterChange }) => {
 }
 
 
-const CountryLi = ({ name }) => <li>{name}</li>
+const CountryLi = ({ name, show }) => {
+  return (
+    <li>{name} <button onClick={() => show(name)}>Show</button> </li>
+  )
+}
 
-const CountryDisplay = ({ countries }) => {
+const CountryDisplay = ({ countries, show }) => {
   if (countries.length === 0) {
     return null
   }
@@ -42,7 +46,9 @@ const CountryDisplay = ({ countries }) => {
       </div>
     )
   }
-  const toShow = countries.map(country => <CountryLi key={country.name.common} name={country.name.common} />)
+  const toShow = countries.map(country => {
+    return <CountryLi key={country.name.common} show={show} name={country.name.common} />}
+  )
   return (
     <ul>
       {toShow}
@@ -54,29 +60,41 @@ const CountryDisplay = ({ countries }) => {
 function App() {
   const [filterValue, setFilterValue] = useState('')
   const [countriesToSHow, setCountriesToShow] = useState([])
+  const [selected, setSelected] = useState(null)
 
   useEffect(() => {
     if (filterValue !== '') {
       countryService.getAll()
         .then(response => {
-          const filteredCountries = response.filter(
-            country => country.name.common.toLowerCase().includes(filterValue)
-          )
+          let filteredCountries = []
+          if (selected) {
+            filteredCountries = response.filter(country => country.name.common === selected)
+          } else {
+            filteredCountries = response.filter(
+              country => country.name.common.toLowerCase().includes(filterValue)
+            )
+          }
           setCountriesToShow(filteredCountries)
         })
+    } else {
+      setCountriesToShow([])
     }
-  }, [filterValue])
+  }, [filterValue, selected])
 
   const handleFilterChange = event => {
     setFilterValue(event.target.value)
+    setSelected(null)
   }
 
+  const show = name => {
+    setSelected(name)
+  }
 
   return (
     <>
       <CountryFilter filterValue={filterValue} handleFilterChange={handleFilterChange} />
 
-      <CountryDisplay countries={countriesToSHow} />
+      <CountryDisplay countries={countriesToSHow} show={show} />
     </>
   )
 }
