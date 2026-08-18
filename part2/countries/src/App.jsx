@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import countryService from './services/countries'
-
+import weatherService from './services/weather'
 
 
 const CountryFilter = ({ filterValue, handleFilterChange }) => {
@@ -18,12 +18,27 @@ const CountryLi = ({ name, show }) => {
   )
 }
 
-const CountryDisplay = ({ countries, show }) => {
+const CountryDisplay = ({ countries, show, weather }) => {
   if (countries.length === 0) {
     return null
   }
   if (countries.length === 1) {
     const country = countries[0]
+
+    let weatherInfo = null
+    if (weather) {
+      weatherInfo = (
+        <div>
+          <h2>Weather in {country.capital}</h2>
+          Temperature {weather.main.temp} Celsius <br />
+          <img
+            src={`https://openweathermap.org/img/wn/${weather.weather[0].icon}.png`}
+            alt={`Icon for ${weather.weather[0].main}`}
+          /> <br />
+          Wind {weather.wind.speed} m/s
+        </div>
+      )
+    }
     return (
       <div>
         <h1>{country.name.common}</h1>
@@ -36,6 +51,8 @@ const CountryDisplay = ({ countries, show }) => {
         </ul>
 
         <img style={{border: '1px solid black'}} src={country.flags.png} alt={country.flags.alt} />
+
+        {weatherInfo}
       </div>
     )
   }
@@ -61,12 +78,16 @@ function App() {
   const [filterValue, setFilterValue] = useState('')
   const [countriesToSHow, setCountriesToShow] = useState([])
   const [selected, setSelected] = useState(null)
+  const [weather, setWeather] = useState(null)
 
   useEffect(() => {
+    setWeather(null)
+
     if (filterValue !== '') {
       countryService.getAll()
         .then(response => {
           let filteredCountries = []
+
           if (selected) {
             filteredCountries = response.filter(country => country.name.common === selected)
           } else {
@@ -74,6 +95,12 @@ function App() {
               country => country.name.common.toLowerCase().includes(filterValue)
             )
           }
+
+          if (filteredCountries.length === 1) {
+            weatherService.getForCity(filteredCountries[0].capital)
+              .then(data => setWeather(data))
+          }
+
           setCountriesToShow(filteredCountries)
         })
     } else {
@@ -94,7 +121,7 @@ function App() {
     <>
       <CountryFilter filterValue={filterValue} handleFilterChange={handleFilterChange} />
 
-      <CountryDisplay countries={countriesToSHow} show={show} />
+      <CountryDisplay countries={countriesToSHow} show={show} weather={weather} />
     </>
   )
 }
