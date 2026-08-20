@@ -12,8 +12,8 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "cors": "^2.8.6",
     "express": "^5.2.1",
+    "mongoose": "^9.9.3",
     "morgan": "^1.11.0"
   }
 }
