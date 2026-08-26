@@ -82,10 +82,10 @@ app.post('/api/persons', (request, response) => {
 
 
 app.delete('/api/persons/:id', (request, response) => {
-  const id = request.params.id
-  persons = persons.filter(note => note.id !== id)
-
-  response.status(204).end()
+  Person.findByIdAndDelete(request.params.id)
+    .then(result => {
+      response.status(204).end()
+    })
 })
 
 
