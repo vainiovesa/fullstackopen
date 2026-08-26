@@ -75,7 +75,7 @@ const App = () => {
   }
 
   const removePerson = (id) => {
-    const person = persons.find(p => p.id === id)
+    const person = persons.find(p => p.id === response.id)
 
     if (confirm(`Remove ${person.name}?`)) {
       personService.remove(id)
