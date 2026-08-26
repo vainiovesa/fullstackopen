@@ -79,7 +79,7 @@ const App = () => {
 
     if (confirm(`Remove ${person.name}?`)) {
       personService.remove(id)
-        .then(response => setPersons(persons.filter(p => p.id !== response.id)))
+        .then(response => setPersons(persons.filter(p => p.id !== id)))
         .catch(error => {
           alert(`Person ${person.name} was already deleted from the server`)
           setPersons(persons.filter(p => p.id !== id))
