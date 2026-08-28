@@ -72,6 +72,15 @@ const App = () => {
           setNotification({message: null})
         }, 5000)
       })
+      .catch(error => {
+        setNotification({
+          message: error.response.data.error,
+          type: 'error'
+        })
+        setTimeout(() => {
+          setNotification({message: null})
+        }, 5000)
+      })
   }
 
   const removePerson = (id) => {
