@@ -46,7 +46,7 @@ const App = () => {
               setNotification({message: null})
             }, 5000)
           })
-          .catch(error => {
+          .catch(() => {
             setNotification({
               message: `Information of ${newName} has already been removed from server`,
               type: 'error'
@@ -89,8 +89,8 @@ const App = () => {
     if (confirm(`Remove ${person.name}?`)) {
 
       personService.remove(id)
-        .then(response => setPersons(persons.filter(p => p.id !== id)))
-        .catch(error => {
+        .then(() => setPersons(persons.filter(p => p.id !== id)))
+        .catch(() => {
           alert(`Person ${person.name} was already deleted from the server`)
           setPersons(persons.filter(p => p.id !== id))
         })
