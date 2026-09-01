@@ -36,6 +36,27 @@ test('id field called id', async () => {
   })
 })
 
+test('a valid blog can be added ', async () => {
+  const newBlog = {
+    title: "valid",
+    author: "Tester",
+    url: "https://example.com/",
+    likes: 1,
+  }
+
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(201)
+    .expect('Content-Type', /application\/json/)
+
+  const blogsAtEnd = await helper.blogsInDb()
+  assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length + 1)
+
+  const contents = blogsAtEnd.map(b => b.title)
+  assert(contents.includes('valid'))
+})
+
 after(async () => {
   await mongoose.connection.close()
 })
