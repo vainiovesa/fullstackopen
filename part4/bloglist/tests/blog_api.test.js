@@ -38,9 +38,9 @@ test('id field called id', async () => {
 
 test('a valid blog can be added ', async () => {
   const newBlog = {
-    title: "valid",
-    author: "Tester",
-    url: "https://example.com/",
+    title: 'valid',
+    author: 'Tester',
+    url: 'https://example.com/',
     likes: 1,
   }
 
@@ -55,6 +55,24 @@ test('a valid blog can be added ', async () => {
 
   const contents = blogsAtEnd.map(b => b.title)
   assert(contents.includes('valid'))
+})
+
+test('blog added with no likes has 0 likes', async () => {
+  const newBlog = {
+    title: 'No likes',
+    author: 'Tester',
+    url: 'https://example.com/',
+  }
+
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(201)
+    .expect('Content-Type', /application\/json/)
+
+  const blogsAtEnd = await helper.blogsInDb()
+  const resultingBlog = blogsAtEnd.filter(blog => blog.title === 'No likes')[0]
+  assert.strictEqual(resultingBlog.likes, 0)
 })
 
 after(async () => {
