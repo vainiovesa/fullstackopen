@@ -105,7 +105,7 @@ test('blog cannot be added without url', async () => {
   assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length)
 })
 
-test('succeeds with status code 204 if id is valid', async () => {
+test('deletion succeeds with status code 204 if id is valid', async () => {
   const blogsAtStart = await helper.blogsInDb()
   const blogToDelete = blogsAtStart[0]
 
@@ -117,6 +117,27 @@ test('succeeds with status code 204 if id is valid', async () => {
   assert(!ids.includes(blogToDelete.id))
 
   assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length - 1)
+})
+
+test('a blog can be modified', async () => {
+  const blogsAtStart = await helper.blogsInDb()
+  const blogToModify = blogsAtStart[0]
+
+  const newLikes = {
+    likes: blogToModify.likes + 1,
+  }
+
+
+  await api
+    .put(`/api/blogs/${blogToModify.id}`)
+    .send(newLikes)
+    .expect(200)
+    .expect('Content-Type', /application\/json/)
+
+  const blogsAtEnd = await helper.blogsInDb()
+  const modifiedBlog = blogsAtEnd.filter(b => b.id === blogToModify.id)[0]
+
+  assert.strictEqual(modifiedBlog.likes, newLikes.likes)
 })
 
 after(async () => {
