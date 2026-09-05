@@ -7,3 +7,14 @@ Content-Type: application/json
     "url": "https://example.com/",
     "likes": 0
 }
+
+###
+
+POST http://localhost:3003/api/users
+Content-Type: application/json
+
+{
+    "username": "tester",
+    "name": "Test Tester",
+    "password": "sekret"
+}
