@@ -5,7 +5,8 @@ Content-Type: application/json
     "title": "Rest test",
     "author": "Rester the Tester",
     "url": "https://example.com/",
-    "likes": 0
+    "likes": 0,
+    "userId": "6a9c5842ed12abc314fdb29f"
 }
 
 ###

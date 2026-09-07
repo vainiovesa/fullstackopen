@@ -48,11 +48,14 @@ test('id field called id', async () => {
 })
 
 test('a valid blog can be added ', async () => {
+  const usersAtStart = await helper.usersInDb()
+
   const newBlog = {
     title: 'valid',
     author: 'Tester',
     url: 'https://example.com/',
     likes: 1,
+    userId: usersAtStart[0].id,
   }
 
   await api
@@ -69,10 +72,13 @@ test('a valid blog can be added ', async () => {
 })
 
 test('blog added with no likes has 0 likes', async () => {
+  const usersAtStart = await helper.usersInDb()
+
   const newBlog = {
     title: 'No likes',
     author: 'Tester',
     url: 'https://example.com/',
+    userId: usersAtStart[0].id,
   }
 
   await api
@@ -87,9 +93,12 @@ test('blog added with no likes has 0 likes', async () => {
 })
 
 test('blog cannot be added without title', async () => {
+  const usersAtStart = await helper.usersInDb()
+
   const newBlog = {
     author: 'Tester',
-    url: 'https://example.com/'
+    url: 'https://example.com/',
+    userId: usersAtStart[0].id,
   }
 
   await api
@@ -102,9 +111,12 @@ test('blog cannot be added without title', async () => {
 })
 
 test('blog cannot be added without url', async () => {
+  const usersAtStart = await helper.usersInDb()
+
   const newBlog = {
     title: 'Some title',
-    author: 'Tester'
+    author: 'Tester',
+    userId: usersAtStart[0].id,
   }
 
   await api
