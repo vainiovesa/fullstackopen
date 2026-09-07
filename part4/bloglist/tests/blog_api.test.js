@@ -2,10 +2,12 @@ const assert = require('node:assert')
 const { test, after, beforeEach } = require('node:test')
 const mongoose = require('mongoose')
 const supertest = require('supertest')
+const bcrypt = require('bcrypt')
 const app = require('../app')
 
 const helper = require('./test_helper')
 const Blog = require('../models/blog')
+const User = require('../models/user')
 
 const api = supertest(app)
 
@@ -13,6 +15,15 @@ beforeEach(async () => {
   await Blog.deleteMany({})
   await Blog.insertMany(helper.initialBlogs)
 })
+
+beforeEach(async () => {
+    await User.deleteMany({})
+
+    const passwordHash = await bcrypt.hash('sekret', 10)
+    const user = new User({ username: 'root', passwordHash })
+
+    await user.save()
+  })
 
 test('Blogs are returned as json', async () => {
   await api
@@ -138,6 +149,99 @@ test('a blog can be modified', async () => {
   const modifiedBlog = blogsAtEnd.filter(b => b.id === blogToModify.id)[0]
 
   assert.strictEqual(modifiedBlog.likes, newLikes.likes)
+})
+
+
+test('user creation succeeds with a fresh username', async () => {
+  const usersAtStart = await helper.usersInDb()
+
+  const newUser = {
+    username: 'tester',
+    name: 'Tester T',
+    password: 'salainen',
+  }
+
+  await api
+    .post('/api/users')
+    .send(newUser)
+    .expect(201)
+    .expect('Content-Type', /application\/json/)
+
+  const usersAtEnd = await helper.usersInDb()
+  assert.strictEqual(usersAtEnd.length, usersAtStart.length + 1)
+
+  const usernames = usersAtEnd.map(u => u.username)
+  assert(usernames.includes(newUser.username))
+})
+
+test('password must be provided', async () => {
+  const usersAtStart = await helper.usersInDb()
+
+  const newUser = {
+    username: 'tester',
+    name: 'Tester T',
+  }
+
+  await api
+    .post('/api/users')
+    .send(newUser)
+    .expect(400)
+
+  const usersAtEnd = await helper.usersInDb()
+  assert.strictEqual(usersAtEnd.length, usersAtStart.length)
+})
+
+test('password cannot be less than three characters', async () => {
+  const usersAtStart = await helper.usersInDb()
+
+  const newUser = {
+    username: 'tester',
+    name: 'Tester T',
+    password: '12',
+  }
+
+  await api
+    .post('/api/users')
+    .send(newUser)
+    .expect(400)
+
+  const usersAtEnd = await helper.usersInDb()
+  assert.strictEqual(usersAtEnd.length, usersAtStart.length)
+})
+
+test('username must provided', async () => {
+  const usersAtStart = await helper.usersInDb()
+
+  const newUser = {
+    name: 'Tester T',
+    password: 'salasana',
+  }
+
+  await api
+    .post('/api/users')
+    .send(newUser)
+    .expect(400)
+
+  const usersAtEnd = await helper.usersInDb()
+  assert.strictEqual(usersAtEnd.length, usersAtStart.length)
+})
+
+test('username must be unique', async () => {
+  const usersAtStart = await helper.usersInDb()
+
+  const newUser = {
+    username: usersAtStart[0].username,
+    name: 'Tester T',
+    password: 'salasana',
+  }
+
+  await api
+    .post('/api/users')
+    .send(newUser)
+    .expect(400)
+
+  const usersAtEnd = await helper.usersInDb()
+  assert.strictEqual(usersAtEnd.length, usersAtStart.length)
 })
 
 after(async () => {
