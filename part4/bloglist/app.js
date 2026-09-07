@@ -12,6 +12,7 @@ mongoose.connect(config.MONGODB_URI, { family: 4 })
 
 app.use(express.json())
 app.use(middleware.requestLogger)
+app.use(middleware.tokenExtractor)
 
 app.use('/api/blogs', blogRouter)
 app.use('/api/users', usersRouter)
