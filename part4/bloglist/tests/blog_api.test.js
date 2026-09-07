@@ -17,13 +17,26 @@ beforeEach(async () => {
 })
 
 beforeEach(async () => {
-    await User.deleteMany({})
+  await User.deleteMany({})
 
-    const passwordHash = await bcrypt.hash('sekret', 10)
-    const user = new User({ username: 'root', passwordHash })
+  const passwordHash = await bcrypt.hash('sekret', 10)
+  const user = new User({ username: 'root', passwordHash })
 
-    await user.save()
-  })
+  await user.save()
+})
+
+const getJwtToken = (async () => {
+  const credentials = {
+    username: 'root',
+    password: 'sekret',
+  }
+
+  const result = await api
+    .post('/api/login')
+    .send(credentials)
+
+  return result._body.token
+})
 
 test('Blogs are returned as json', async () => {
   await api
@@ -48,18 +61,18 @@ test('id field called id', async () => {
 })
 
 test('a valid blog can be added ', async () => {
-  const usersAtStart = await helper.usersInDb()
+  const jwtToken = await getJwtToken()
 
   const newBlog = {
     title: 'valid',
     author: 'Tester',
     url: 'https://example.com/',
     likes: 1,
-    userId: usersAtStart[0].id,
   }
 
   await api
     .post('/api/blogs')
+    .set('Authorization', `Bearer ${jwtToken}`)
     .send(newBlog)
     .expect(201)
     .expect('Content-Type', /application\/json/)
@@ -72,17 +85,17 @@ test('a valid blog can be added ', async () => {
 })
 
 test('blog added with no likes has 0 likes', async () => {
-  const usersAtStart = await helper.usersInDb()
+  const jwtToken = await getJwtToken()
 
   const newBlog = {
     title: 'No likes',
     author: 'Tester',
     url: 'https://example.com/',
-    userId: usersAtStart[0].id,
   }
 
   await api
     .post('/api/blogs')
+    .set('Authorization', `Bearer ${jwtToken}`)
     .send(newBlog)
     .expect(201)
     .expect('Content-Type', /application\/json/)
@@ -93,16 +106,16 @@ test('blog added with no likes has 0 likes', async () => {
 })
 
 test('blog cannot be added without title', async () => {
-  const usersAtStart = await helper.usersInDb()
+  const jwtToken = await getJwtToken()
 
   const newBlog = {
     author: 'Tester',
     url: 'https://example.com/',
-    userId: usersAtStart[0].id,
   }
 
   await api
     .post('/api/blogs')
+    .set('Authorization', `Bearer ${jwtToken}`)
     .send(newBlog)
     .expect(400)
 
@@ -111,16 +124,16 @@ test('blog cannot be added without title', async () => {
 })
 
 test('blog cannot be added without url', async () => {
-  const usersAtStart = await helper.usersInDb()
+  const jwtToken = await getJwtToken()
 
   const newBlog = {
     title: 'Some title',
     author: 'Tester',
-    userId: usersAtStart[0].id,
   }
 
   await api
     .post('/api/blogs')
+    .set('Authorization', `Bearer ${jwtToken}`)
     .send(newBlog)
     .expect(400)
 
@@ -254,6 +267,18 @@ test('username must be unique', async () => {
 
   const usersAtEnd = await helper.usersInDb()
   assert.strictEqual(usersAtEnd.length, usersAtStart.length)
+})
+
+test('user can login', async () => {
+  const credentials = {
+    username: 'root',
+    password: 'sekret',
+  }
+
+  const result = await api
+    .post('/api/login')
+    .send(credentials)
+    .expect(200)
 })
 
 after(async () => {
