@@ -3,7 +3,11 @@ const baseUrl = '/api/blogs'
 
 let token = null
 const setToken = newToken => {
-  token = `Bearer ${newToken}`
+  if (newToken) {
+    token = `Bearer ${newToken}`
+  } else {
+    token = null
+  }
 }
 
 const getAll = () => {
