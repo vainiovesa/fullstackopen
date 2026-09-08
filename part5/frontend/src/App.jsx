@@ -9,7 +9,7 @@ const App = () => {
   const [newBlogTitle, setNewBlogTitle] = useState('')
   const [newBlogAuthor, setNewBlogAuthor] = useState('')
   const [newBlogUrl, setNewBlogUrl] = useState('')
-  const [errorMessage, setErrorMessage] = useState(null)
+  const [notification, setNotification] = useState(null)
   const [username, setUsername] = useState('') 
   const [password, setPassword] = useState('') 
   const [user, setUser] = useState(null)
@@ -43,9 +43,9 @@ const App = () => {
       setUsername('')
       setPassword('')
     } catch {
-      setErrorMessage('wrong credentials')
+      setNotification({message: 'wrong username or password', type: 'error'})
       setTimeout(() => {
-        setErrorMessage(null)
+        setNotification(null)
       }, 5000)
     }
   }
@@ -56,6 +56,10 @@ const App = () => {
     window.localStorage.removeItem('loggedBlogappUser')
     blogService.setToken(null)
     setUser(null)
+    setNotification({message: 'Logged out'})
+    setTimeout(() => {
+      setNotification(null)
+    }, 5000)
   }
 
   const loginForm = () => (
@@ -99,7 +103,15 @@ const App = () => {
         setNewBlogTitle('')
         setNewBlogAuthor('')
         setNewBlogUrl('')
+        setNotification({message: `a new blog ${returnedBlog.title} by ${returnedBlog.author} added`})
       })
+      .catch(e => {
+        setNotification({message: e.response.data.error, type: 'error'})
+      })
+
+    setTimeout(() => {
+      setNotification(null)
+    }, 5000)
   }
 
   const handleBlogTitleChange = (event) => {
@@ -142,7 +154,7 @@ const App = () => {
   return (
     <div>
       <h2>blogs</h2>
-      <Notification message={errorMessage} />
+      {notification && <Notification message={notification.message} type={notification.type} />}
 
       {!user && loginForm()}
       {user && (
