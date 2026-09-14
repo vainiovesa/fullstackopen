@@ -18,7 +18,7 @@ const App = () => {
   useEffect(() => {
     blogService.getAll().then(blogs =>
       setBlogs( blogs )
-    )  
+    )
   }, [])
 
   useEffect(() => {
@@ -105,6 +105,21 @@ const App = () => {
     }, 5000)
   }
 
+  const handleLike = (blogObject) => {
+    const newBlogObject = {...blogObject, likes: blogObject.likes + 1}
+    blogService
+      .update(newBlogObject)
+      .then(returnedObject => {
+        const newBlogs = blogs.map(blog => {
+          return blog.id === newBlogObject.id ? returnedObject : blog
+        })
+        setBlogs(newBlogs)
+      })
+      .catch(e => {
+        setNotification({message: e.response.data.error, type: 'error'})
+      })
+  }
+
   return (
     <div>
       <h2>blogs</h2>
@@ -118,7 +133,7 @@ const App = () => {
             <BlogForm createBlog={addBlog} />
           </Togglable>
           {blogs.map(blog =>
-            <Blog key={blog.id} blog={blog} />
+            <Blog key={blog.id} blog={blog} handleLike={handleLike} />
           )}
         </div>
       )}
