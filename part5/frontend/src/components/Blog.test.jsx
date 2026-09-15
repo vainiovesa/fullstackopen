@@ -49,3 +49,26 @@ test('clicking view shows url and likes', async () => {
   expect(likesElement).toBeVisible()
   expect(userElement).toBeVisible()
 })
+
+test('clicking like twice calls like twice', async () => {
+  const blog = {
+    author: 'test author',
+    title: 'test title',
+    url: 'www.example.com',
+    likes: 0,
+    user: {
+      username: 'tester'
+    }
+  }
+
+  const mockHandler = vi.fn()
+
+  render(<Blog blog={blog} handleLike={mockHandler} />)
+
+  const user = userEvent.setup()
+  const button = screen.getByText('like')
+  await user.click(button)
+  await user.click(button)
+
+  expect(mockHandler.mock.calls).toHaveLength(2)
+})
