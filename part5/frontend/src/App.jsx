@@ -105,7 +105,7 @@ const App = () => {
     }, 5000)
   }
 
-  const handleLike = (blogObject) => {
+  const handleLike = blogObject => {
     const newBlogObject = {...blogObject, likes: blogObject.likes + 1}
     blogService
       .update(newBlogObject)
@@ -117,7 +117,29 @@ const App = () => {
       })
       .catch(e => {
         setNotification({message: e.response.data.error, type: 'error'})
+        setTimeout(() => {
+          setNotification(null)
+        }, 5000)
       })
+  }
+
+  const handleRemove = blogObject => {
+    if (window.confirm(`Remove ${blogObject.title} by ${blogObject.author}?`)) {
+      blogService
+        .remove(blogObject)
+        .then(() => {
+          setNotification({message: `Removed ${blogObject.title} by ${blogObject.author}`})
+          const newBlogs = blogs.filter(blog => blog.id !== blogObject.id)
+          setBlogs(newBlogs)
+        })
+        .catch(e => {
+          setNotification({message: e.response.data.error, type: 'error'})
+        })
+  
+      setTimeout(() => {
+        setNotification(null)
+      }, 5000)
+    }
   }
 
   return (
@@ -133,7 +155,12 @@ const App = () => {
             <BlogForm createBlog={addBlog} />
           </Togglable>
           {blogs.map(blog =>
-            <Blog key={blog.id} blog={blog} handleLike={handleLike} />
+            <Blog 
+              key={blog.id}
+              blog={blog}
+              handleLike={handleLike}
+              handleRemove={handleRemove}
+              userOwnsThis={user.username === blog.user.username} />
           )}
         </div>
       )}
