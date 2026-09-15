@@ -9,8 +9,8 @@ import loginService from './services/login'
 const App = () => {
   const [blogs, setBlogs] = useState([])
   const [notification, setNotification] = useState(null)
-  const [username, setUsername] = useState('') 
-  const [password, setPassword] = useState('') 
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
 
   const blogFormRef = useRef()
@@ -38,13 +38,13 @@ const App = () => {
 
       window.localStorage.setItem(
         'loggedBlogappUser', JSON.stringify(user)
-      ) 
+      )
       blogService.setToken(user.token)
       setUser(user)
       setUsername('')
       setPassword('')
     } catch {
-      setNotification({message: 'wrong username or password', type: 'error'})
+      setNotification({ message: 'wrong username or password', type: 'error' })
       setTimeout(() => {
         setNotification(null)
       }, 5000)
@@ -57,7 +57,7 @@ const App = () => {
     window.localStorage.removeItem('loggedBlogappUser')
     blogService.setToken(null)
     setUser(null)
-    setNotification({message: 'Logged out'})
+    setNotification({ message: 'Logged out' })
     setTimeout(() => {
       setNotification(null)
     }, 5000)
@@ -94,10 +94,10 @@ const App = () => {
       .create(blogObject)
       .then(returnedBlog => {
         setBlogs(blogs.concat(returnedBlog))
-        setNotification({message: `a new blog ${returnedBlog.title} by ${returnedBlog.author} added`})
+        setNotification({ message: `a new blog ${returnedBlog.title} by ${returnedBlog.author} added` })
       })
       .catch(e => {
-        setNotification({message: e.response.data.error, type: 'error'})
+        setNotification({ message: e.response.data.error, type: 'error' })
       })
 
     setTimeout(() => {
@@ -106,7 +106,7 @@ const App = () => {
   }
 
   const handleLike = blogObject => {
-    const newBlogObject = {...blogObject, likes: blogObject.likes + 1}
+    const newBlogObject = { ...blogObject, likes: blogObject.likes + 1 }
     blogService
       .update(newBlogObject)
       .then(returnedObject => {
@@ -116,7 +116,7 @@ const App = () => {
         setBlogs(newBlogs.sort((a, b) => b.likes - a.likes))
       })
       .catch(e => {
-        setNotification({message: e.response.data.error, type: 'error'})
+        setNotification({ message: e.response.data.error, type: 'error' })
         setTimeout(() => {
           setNotification(null)
         }, 5000)
@@ -128,14 +128,14 @@ const App = () => {
       blogService
         .remove(blogObject)
         .then(() => {
-          setNotification({message: `Removed ${blogObject.title} by ${blogObject.author}`})
+          setNotification({ message: `Removed ${blogObject.title} by ${blogObject.author}` })
           const newBlogs = blogs.filter(blog => blog.id !== blogObject.id)
           setBlogs(newBlogs)
         })
         .catch(e => {
-          setNotification({message: e.response.data.error, type: 'error'})
+          setNotification({ message: e.response.data.error, type: 'error' })
         })
-  
+
       setTimeout(() => {
         setNotification(null)
       }, 5000)
@@ -155,7 +155,7 @@ const App = () => {
             <BlogForm createBlog={addBlog} />
           </Togglable>
           {blogs.map(blog =>
-            <Blog 
+            <Blog
               key={blog.id}
               blog={blog}
               handleLike={handleLike}
