@@ -9,12 +9,17 @@ const logout = async (page) => {
 }
 
 const createBlog = async (page, title, author, url) => {
-  await page.getByRole('button', { name: 'new blog' }).click()
+  const newBlog = page.getByRole('button', { name: 'new blog' });
+  try {
+    await newBlog.waitFor({ state: 'visible', timeout: 2000 });
+    await newBlog.click();
+  } catch {
+  }
   await page.getByLabel('title').fill(title)
   await page.getByLabel('author').fill(author)
   await page.getByLabel('url').fill(url)
   await page.getByRole('button', { name: 'create' }).click()
-  await page.getByText('view').waitFor()
+  await page.getByText(title).first().waitFor()
 }
 
 export { loginWith, logout, createBlog }

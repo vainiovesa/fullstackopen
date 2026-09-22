@@ -101,4 +101,43 @@ describe('Blog app', () => {
     await blogElement.getByRole('button', { name: 'view' }).click()
     await expect(blogElement.getByText('remove')).not.toBeVisible()
   })
+
+  test('Blogs ordered by likes', async ({ page }) => {
+    await loginWith(page, 'tester', 'sekret')
+
+    await createBlog(page, 'first blog', 'Tester', 'https://example.com/1')
+    await createBlog(page, 'second blog', 'Author', 'https://example.com/2')
+    await createBlog(page, 'third blog', 'Playwright', 'https://example.com/3')
+
+    const firstBlogText = page.getByText('first blog')
+    const firstBlogElement = firstBlogText.locator('..')
+    await firstBlogElement.getByRole('button', { name: 'view' }).click()
+    await firstBlogElement.getByRole('button', { name: 'like' }).click()
+
+    const secondBlogText = page.getByText('second blog')
+    const secondBlogElement = secondBlogText.locator('..')
+    await secondBlogElement.getByRole('button', { name: 'view' }).click()
+    await secondBlogElement.getByRole('button', { name: 'like' }).click()
+    await expect(secondBlogElement.getByText('likes 1')).toBeVisible()
+    await secondBlogElement.getByRole('button', { name: 'like' }).click()
+
+    const thirdBlogText = page.getByText('third blog')
+    const thirdBlogElement = thirdBlogText.locator('..')
+    await thirdBlogElement.getByRole('button', { name: 'view' }).click()
+    await expect(thirdBlogElement.getByText('likes 0')).toBeVisible()
+    await expect(secondBlogElement.getByText('likes 2')).toBeVisible()
+    await expect(firstBlogElement.getByText('likes 1')).toBeVisible()
+
+    const first = await page.getByText('hide').first()
+    const second = await page.getByText('hide').nth(1)
+    const third = await page.getByText('hide').nth(2)
+
+    const firstInOrder = first.locator('..')
+    const secondInOrder = second.locator('..')
+    const thirdInOrder = third.locator('..')
+
+    await expect(firstInOrder.getByText('second blog')).toBeVisible()
+    await expect(secondInOrder.getByText('first blog')).toBeVisible()
+    await expect(thirdInOrder.getByText('third blog')).toBeVisible()
+  })
 })
