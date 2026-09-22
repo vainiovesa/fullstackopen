@@ -62,5 +62,18 @@ describe('Blog app', () => {
       await blogElement.getByRole('button', { name: 'like' }).click()
       await expect(blogElement.getByText('likes 1')).toBeVisible()
     })
+
+    test('a new blog can be deleted', async ({ page }) => {
+      page.on('dialog', async dialog => await dialog.accept())
+
+      await createBlog(page, 'third blog created by playwright', 'Playwright', 'https://example.com/')
+      await page.getByRole('button', { name: 'view' }).click()
+
+      const blog = page.getByText('third blog created by playwright')
+
+      await page.getByRole('button', { name: 'remove' }).click()
+      await page.waitForResponse(response => response.request().method() === 'DELETE' && response.ok())
+      await expect(blog).not.toBeAttached()
+    })
   })
 })
