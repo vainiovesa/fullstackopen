@@ -1,7 +1,4 @@
-import { useNavigate } from 'react-router-dom'
-
 const Blog = ({ blog, handleLike, handleRemove, user }) => {
-  const navigate = useNavigate()
 
   const like = () => {
     handleLike(blog)
@@ -9,7 +6,6 @@ const Blog = ({ blog, handleLike, handleRemove, user }) => {
 
   const remove = () => {
     handleRemove(blog)
-    navigate('/')
   }
 
   return (
