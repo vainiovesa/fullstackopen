@@ -1,8 +1,13 @@
-import { useState, useEffect, useRef } from 'react'
+import {
+  Routes, Route, Link, useNavigate
+} from 'react-router-dom'
+
+import { useState, useEffect } from 'react'
+// import { useRef } from 'react'
 import Notification from './components/Notification'
 import Blog from './components/Blog'
-import Togglable from './components/Togglable'
-import BlogForm from './components/BlogForm'
+// import Togglable from './components/Togglable'
+// import BlogForm from './components/BlogForm'
 import blogService from './services/blogs'
 import loginService from './services/login'
 
@@ -13,7 +18,9 @@ const App = () => {
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
 
-  const blogFormRef = useRef()
+  const navigate = useNavigate()
+
+  // const blogFormRef = useRef()
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
@@ -43,6 +50,7 @@ const App = () => {
       setUser(user)
       setUsername('')
       setPassword('')
+      navigate('/')
     } catch {
       setNotification({ message: 'wrong username or password', type: 'error' })
       setTimeout(() => {
@@ -61,6 +69,7 @@ const App = () => {
     setTimeout(() => {
       setNotification(null)
     }, 5000)
+    navigate('/')
   }
 
   const loginForm = () => (
@@ -89,21 +98,21 @@ const App = () => {
     </form>
   )
 
-  const addBlog = blogObject => {
-    blogService
-      .create(blogObject)
-      .then(returnedBlog => {
-        setBlogs(blogs.concat(returnedBlog))
-        setNotification({ message: `a new blog ${returnedBlog.title} by ${returnedBlog.author} added` })
-      })
-      .catch(e => {
-        setNotification({ message: e.response.data.error, type: 'error' })
-      })
+  // const addBlog = blogObject => {
+  //   blogService
+  //     .create(blogObject)
+  //     .then(returnedBlog => {
+  //       setBlogs(blogs.concat(returnedBlog))
+  //       setNotification({ message: `a new blog ${returnedBlog.title} by ${returnedBlog.author} added` })
+  //     })
+  //     .catch(e => {
+  //       setNotification({ message: e.response.data.error, type: 'error' })
+  //     })
 
-    setTimeout(() => {
-      setNotification(null)
-    }, 5000)
-  }
+  //   setTimeout(() => {
+  //     setNotification(null)
+  //   }, 5000)
+  // }
 
   const handleLike = blogObject => {
     const newBlogObject = { ...blogObject, likes: blogObject.likes + 1 }
@@ -142,18 +151,20 @@ const App = () => {
     }
   }
 
-  return (
+  const padding = {
+    padding: 5
+  }
+
+  const blogList = () => (
     <div>
       <h2>blogs</h2>
       {notification && <Notification message={notification.message} type={notification.type} />}
 
-      {!user && loginForm()}
       {user && (
         <div>
-          <p>{user.name} logged in<button onClick={handleLogout}>logout</button></p>
-          <Togglable buttonLabel="new blog" ref={blogFormRef}>
+          {/* <Togglable buttonLabel="new blog" ref={blogFormRef}>
             <BlogForm createBlog={addBlog} />
-          </Togglable>
+          </Togglable> */}
           {blogs.map(blog =>
             <Blog
               key={blog.id}
@@ -164,6 +175,21 @@ const App = () => {
           )}
         </div>
       )}
+    </div>
+  )
+
+  return (
+    <div>
+      <div>
+        <Link style={padding} to="/">blogs</Link>
+        {!user && <Link style={padding} to="/login">login</Link>}
+        {user && <button onClick={handleLogout}>logout</button>}
+      </div>
+
+      <Routes>
+        <Route path="/" element={blogList()} />
+        <Route path="/login" element={loginForm()} />
+      </Routes>
     </div>
   )
 }
