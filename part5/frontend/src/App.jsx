@@ -1,5 +1,5 @@
 import {
-  Routes, Route, Link, useNavigate
+  Routes, Route, Link, useNavigate, useMatch
 } from 'react-router-dom'
 
 import { useState, useEffect } from 'react'
@@ -160,23 +160,21 @@ const App = () => {
       <h2>blogs</h2>
       {notification && <Notification message={notification.message} type={notification.type} />}
 
-      {user && (
-        <div>
-          {/* <Togglable buttonLabel="new blog" ref={blogFormRef}>
-            <BlogForm createBlog={addBlog} />
-          </Togglable> */}
-          {blogs.map(blog =>
-            <Blog
-              key={blog.id}
-              blog={blog}
-              handleLike={handleLike}
-              handleRemove={handleRemove}
-              userOwnsThis={user.username === blog.user.username} />
-          )}
-        </div>
-      )}
+      <ul>
+        {blogs.map(blog => (
+          <li key={blog.id}>
+            <Link to={`/blogs/${blog.id}`}>{blog.title} by {blog.author}</Link>
+          </li>
+        ))}
+      </ul>
     </div>
   )
+
+  const match = useMatch('/blogs/:id')
+
+  const blog = match
+    ? blogs.find(blog => blog.id === match.params.id)
+    : null
 
   return (
     <div>
@@ -189,6 +187,13 @@ const App = () => {
       <Routes>
         <Route path="/" element={blogList()} />
         <Route path="/login" element={loginForm()} />
+        <Route path="/blogs/:id" element={
+          <Blog
+            blog={blog}
+            handleLike={handleLike}
+            handleRemove={handleRemove}
+            user={user} />
+        } />
       </Routes>
     </div>
   )

@@ -1,11 +1,7 @@
-import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 
-const Blog = ({ blog, handleLike, handleRemove, userOwnsThis }) => {
-  const [visible, setVisible] = useState(false)
-
-  const toggleVisibility = () => {
-    setVisible(!visible)
-  }
+const Blog = ({ blog, handleLike, handleRemove, user }) => {
+  const navigate = useNavigate()
 
   const like = () => {
     handleLike(blog)
@@ -13,45 +9,25 @@ const Blog = ({ blog, handleLike, handleRemove, userOwnsThis }) => {
 
   const remove = () => {
     handleRemove(blog)
+    navigate('/')
   }
-
-  const blogStyle = {
-    paddingTop: 10,
-    paddingLeft: 2,
-    border: 'solid',
-    borderWidth: 1,
-    marginBottom: 5
-  }
-
-  const hideWhenVisible = { display: visible ? 'none' : '' }
-  const showWhenVisible = { display: visible ? '' : 'none' }
 
   return (
-
-    <div style={blogStyle}>
-      <div style={hideWhenVisible}>
-        {blog.title} {blog.author}
-        <button onClick={toggleVisibility}>view</button>
-      </div>
-
-      <div style={showWhenVisible}>
+    <div>
+      <div>
+        <h3>
+          {blog.author}: {blog.title}
+        </h3>
+        <a href={blog.url}>{blog.url}</a>
         <div>
-          {blog.title} {blog.author} <button onClick={toggleVisibility}>hide</button>
+          likes {blog.likes} {user && <button onClick={like}>like</button>}
         </div>
         <div>
-          {blog.url}
+          Added by {blog.user.username}
         </div>
-        <div>
-          likes {blog.likes} <button onClick={like}>like</button>
-        </div>
-        <div>
-          {blog.user.username}
-        </div>
-        {userOwnsThis &&
+        {user && user.username === blog.user.username &&
           <div>
-            <button
-              style={{ backgroundColor: 'lightblue', borderRadius: '5px' }}
-              onClick={remove}>remove</button>
+            <button onClick={remove}>remove</button>
           </div>
         }
       </div>
