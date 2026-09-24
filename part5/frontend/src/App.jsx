@@ -100,6 +100,7 @@ const App = () => {
       .then(returnedBlog => {
         setBlogs(blogs.concat(returnedBlog))
         setNotification({ message: `a new blog ${returnedBlog.title} by ${returnedBlog.author} added` })
+        navigate('/')
       })
       .catch(e => {
         setNotification({ message: e.response.data.error, type: 'error' })
