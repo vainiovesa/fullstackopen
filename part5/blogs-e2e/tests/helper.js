@@ -1,4 +1,5 @@
 const loginWith = async (page, username, password)  => {
+  await page.goto('http://localhost:5173/login')
   await page.getByLabel('username').fill(username)
   await page.getByLabel('password').fill(password)
   await page.getByRole('button', { name: 'login' }).click()
@@ -9,12 +10,8 @@ const logout = async (page) => {
 }
 
 const createBlog = async (page, title, author, url) => {
-  const newBlog = page.getByRole('button', { name: 'new blog' });
-  try {
-    await newBlog.waitFor({ state: 'visible', timeout: 2000 });
-    await newBlog.click();
-  } catch {
-  }
+  await page.goto('http://localhost:5173/create')
+  
   await page.getByLabel('title').fill(title)
   await page.getByLabel('author').fill(author)
   await page.getByLabel('url').fill(url)
