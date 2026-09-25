@@ -1,26 +1,23 @@
+import styled from 'styled-components'
+
+const NotificationElement = styled.div`
+  color: ${({ type }) => type === 'error' ? 'red' : 'green'};
+  background: lightgrey;
+  font-size: 20px;
+  border-style: solid;
+  padding: 10px;
+  margin: 10px 0;
+`
+
 const Notification = ({ message, type }) => {
   if (message === null) {
     return null
   }
 
-  const notificationStyle = {
-    color: 'green',
-    background: 'lightgrey',
-    fontSize: '20px',
-    borderStyle: 'solid',
-    borderRadius: '5px',
-    padding: '10px',
-    marginBottom: '10px'
-  }
-
-  if (type === 'error') {
-    notificationStyle.color = 'red'
-  }
-
   return (
-    <div className="notification" style={notificationStyle}>
+    <NotificationElement className="notification" type={type}>
       {message}
-    </div>
+    </NotificationElement>
   )
 }
 

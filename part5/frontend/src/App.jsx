@@ -31,6 +31,30 @@ const Input = styled.input`
   border-right: none;
 `
 
+const Nav = styled.div`
+  background: Dodgerblue;
+  padding: 1em;
+  box-shadow: 5px 5px 5px 1px rgb(0 0 0 / 20%);
+  display: flex;
+  justify-content: space-between;
+`
+
+const NavItems = styled.div`
+  align-self: flex-end;
+`
+
+const NavBtn = styled.div`
+  color: White;
+  display: inline;
+  cursor: pointer;
+`
+
+const H1 = styled.div`
+  color: White;
+  display: inline;
+  font-size: 1.2rem;
+`
+
 const App = () => {
   const [blogs, setBlogs] = useState([])
   const [notification, setNotification] = useState(null)
@@ -176,14 +200,17 @@ const App = () => {
     }
   }
 
-  const padding = {
-    padding: 5
+  const navlink = {
+    paddingRight: '10px',
+    color: 'white',
+    textDecoration: 'none'
   }
 
   const blogList = () => (
     <div>
-      <h2>blogs</h2>
       {notification && <Notification message={notification.message} type={notification.type} />}
+
+      <h2>blogs</h2>
 
       <ul>
         {blogs.map(blog => (
@@ -203,12 +230,15 @@ const App = () => {
 
   return (
     <div>
-      <div>
-        <Link style={padding} to="/">blogs</Link>
-        {!user && <Link style={padding} to="/login">login</Link>}
-        {user && <Link style={padding} to="/create">new blog</Link>}
-        {user && <button onClick={handleLogout}>logout</button>}
-      </div>
+      <Nav>
+        <H1>Blog App</H1>
+        <NavItems>
+          <Link style={navlink} to="/">blogs</Link>
+          {!user && <Link style={navlink} to="/login">login</Link>}
+          {user && <Link style={navlink} to="/create">new blog</Link>}
+          {user && <NavBtn onClick={handleLogout}>logout</NavBtn>}
+        </NavItems>
+      </Nav>
 
       <Routes>
         <Route path="/" element={blogList()} />
