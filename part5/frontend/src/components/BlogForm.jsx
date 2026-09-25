@@ -1,4 +1,24 @@
 import { useState } from 'react'
+import styled from 'styled-components'
+
+const Button = styled.button`
+  background: Dodgerblue;
+  color: White;
+  text-transform: uppercase;
+  font-size: 1.2em;
+  margin: 1em;
+  padding: 0.5em 1em;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+`
+
+const Input = styled.input`
+  margin: 0.25em;
+  width: 300px;
+  border-radius: 10px;
+  padding: 10px;
+`
 
 const BlogForm = ({ createBlog }) => {
   const [newBlogTitle, setNewBlogTitle] = useState('')
@@ -20,29 +40,29 @@ const BlogForm = ({ createBlog }) => {
 
   return (
     <div>
-      <h2>Add a blog</h2>
+      <h2>Create new</h2>
 
       <form onSubmit={addBlog}>
         <div>
           <label>
-            title:
-            <input value={newBlogTitle} onChange={event => setNewBlogTitle(event.target.value)} />
+            title: <br />
+            <Input value={newBlogTitle} onChange={event => setNewBlogTitle(event.target.value)} />
           </label>
         </div>
         <div>
           <label>
-            author:
-            <input value={newBlogAuthor} onChange={event => setNewBlogAuthor(event.target.value)} />
+            author: <br />
+            <Input value={newBlogAuthor} onChange={event => setNewBlogAuthor(event.target.value)} />
           </label>
         </div>
         <div>
           <label>
-            url:
-            <input value={newBlogUrl} onChange={event => setNewBlogUrl(event.target.value)} />
+            url: <br />
+            <Input value={newBlogUrl} onChange={event => setNewBlogUrl(event.target.value)} />
           </label>
         </div>
 
-        <button type="submit">create</button>
+        <Button type="submit">create</Button>
       </form>
 
     </div>

@@ -9,6 +9,28 @@ import BlogForm from './components/BlogForm'
 import blogService from './services/blogs'
 import loginService from './services/login'
 
+import styled from 'styled-components'
+
+const Button = styled.button`
+  background: Dodgerblue;
+  color: White;
+  text-transform: uppercase;
+  font-size: 1.2em;
+  margin: 1em;
+  padding: 0.5em 1em;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+`
+
+const Input = styled.input`
+  margin: 0.25em;
+  width: 200px;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+`
+
 const App = () => {
   const [blogs, setBlogs] = useState([])
   const [notification, setNotification] = useState(null)
@@ -71,11 +93,12 @@ const App = () => {
   const loginForm = () => (
     <div>
       {notification && <Notification message={notification.message} type={notification.type} />}
+      <h2>Log in to application</h2>
       <form onSubmit={handleLogin}>
         <div>
           <label>
             username
-            <input
+            <Input
               type="text"
               value={username}
               onChange={({ target }) => setUsername(target.value)}
@@ -85,14 +108,14 @@ const App = () => {
         <div>
           <label>
             password
-            <input
+            <Input
               type="password"
               value={password}
               onChange={({ target }) => setPassword(target.value)}
             />
           </label>
         </div>
-        <button type="submit">login</button>
+        <Button type="submit">login</Button>
       </form>
 
     </div>
